@@ -9,146 +9,146 @@
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 
 :root {
-–bg:#0a0a0f; –card:#1c1c28; –accent:#7c3aed; –accent2:#a855f7;
-–red:#ef4444; –green:#22c55e; –yellow:#f59e0b;
-–text:#f1f0ff; –muted:#6b6880; –border:rgba(124,58,237,0.22);
+  --bg:#0a0a0f; --card:#1c1c28; --accent:#7c3aed; --accent2:#a855f7;
+  --red:#ef4444; --green:#22c55e; --yellow:#f59e0b;
+  --text:#f1f0ff; --muted:#6b6880; --border:rgba(124,58,237,0.22);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 body{
-background:var(–bg);color:var(–text);font-family:‘DM Sans’,sans-serif;
-min-height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+  min-height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center;
 }
 body::before{
-content:’’;position:fixed;inset:0;
-background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.65’ numOctaves=‘3’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);
-pointer-events:none;z-index:0;
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
 }
 
 .screen{
-display:none;width:100%;max-width:440px;min-height:100dvh;
-padding:28px 20px;flex-direction:column;align-items:center;justify-content:center;
-position:relative;z-index:1;animation:fadeIn 0.3s ease;
+  display:none;width:100%;max-width:440px;min-height:100dvh;
+  padding:28px 20px;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;z-index:1;animation:fadeIn 0.3s ease;
 }
 .screen.active{display:flex;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 .logo{
-font-family:‘Bebas Neue’,sans-serif;font-size:clamp(56px,15vw,84px);letter-spacing:5px;
-background:linear-gradient(135deg,#a855f7 0%,#7c3aed 50%,#4f46e5 100%);
--webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;text-align:center;
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,15vw,84px);letter-spacing:5px;
+  background:linear-gradient(135deg,#a855f7 0%,#7c3aed 50%,#4f46e5 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;text-align:center;
 }
-.logo-sub{font-size:11px;letter-spacing:6px;color:var(–muted);text-transform:uppercase;margin-top:5px;text-align:center;}
+.logo-sub{font-size:11px;letter-spacing:6px;color:var(--muted);text-transform:uppercase;margin-top:5px;text-align:center;}
 
-.card{background:var(–card);border:1px solid var(–border);border-radius:20px;padding:22px;width:100%;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;width:100%;}
 
 .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .slider-row:last-child{margin-bottom:0;}
-.slider-row label{font-size:13px;color:var(–muted);min-width:88px;}
-.slider-row input[type=range]{flex:1;accent-color:var(–accent);cursor:pointer;}
-.slider-val{font-family:‘Bebas Neue’,sans-serif;font-size:28px;color:var(–accent2);min-width:26px;text-align:right;}
+.slider-row label{font-size:13px;color:var(--muted);min-width:88px;}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer;}
+.slider-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent2);min-width:26px;text-align:right;}
 
 .btn{
-display:block;width:100%;padding:15px;border-radius:14px;border:none;cursor:pointer;
-font-family:‘DM Sans’,sans-serif;font-weight:700;font-size:16px;letter-spacing:0.4px;transition:all 0.15s;
+  display:block;width:100%;padding:15px;border-radius:14px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.4px;transition:all 0.15s;
 }
-.btn-primary{background:linear-gradient(135deg,var(–accent),#4f46e5);color:#fff;box-shadow:0 4px 22px rgba(124,58,237,0.38);}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#4f46e5);color:#fff;box-shadow:0 4px 22px rgba(124,58,237,0.38);}
 .btn-primary:active{transform:scale(0.97);box-shadow:none;}
-.btn-ghost{background:transparent;border:1px solid var(–border);color:var(–muted);font-size:14px;margin-top:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:14px;margin-top:10px;}
 .btn-ghost:active{background:rgba(255,255,255,0.04);}
 .btn-red{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;box-shadow:0 4px 20px rgba(239,68,68,0.32);}
 
 .players-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:18px;max-height:55dvh;overflow-y:auto;}
 .player-item{
-background:rgba(255,255,255,0.03);border:1px solid var(–border);border-radius:12px;
-padding:11px 15px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;
+  padding:11px 15px;display:flex;align-items:center;gap:10px;flex-shrink:0;
 }
-.player-item input{background:transparent;border:none;outline:none;color:var(–text);font-family:‘DM Sans’,sans-serif;font-size:15px;flex:1;}
-.player-item input::placeholder{color:var(–muted);}
-.pnum{font-family:‘Bebas Neue’,sans-serif;font-size:20px;color:var(–accent2);min-width:22px;}
+.player-item input{background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;flex:1;}
+.player-item input::placeholder{color:var(--muted);}
+.pnum{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);min-width:22px;}
 
-.player-badge{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(–muted);margin-bottom:4px;}
-.player-name{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(40px,11vw,60px);letter-spacing:2px;line-height:1;text-align:center;margin-bottom:4px;}
-.player-sub{color:var(–muted);font-size:13px;margin-bottom:22px;}
+.player-badge{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.player-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,11vw,60px);letter-spacing:2px;line-height:1;text-align:center;margin-bottom:4px;}
+.player-sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
 
 .progress{width:100%;height:3px;background:rgba(255,255,255,0.07);border-radius:9px;margin-bottom:22px;overflow:hidden;}
-.progress-bar{height:100%;background:linear-gradient(90deg,var(–accent),var(–accent2));border-radius:9px;transition:width 0.4s ease;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:9px;transition:width 0.4s ease;}
 
 /* ── Swipe zone ── */
 .swipe-zone{
-width:100%;background:var(–card);border:1px solid var(–border);
-border-radius:24px;overflow:hidden;position:relative;
-height:250px;cursor:grab;user-select:none;
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:24px;overflow:hidden;position:relative;
+  height:250px;cursor:grab;user-select:none;
 }
 .swipe-hint{
-position:absolute;inset:0;display:flex;flex-direction:column;
-align-items:center;justify-content:center;gap:8px;
-pointer-events:none;transition:opacity 0.2s;
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  pointer-events:none;transition:opacity 0.2s;
 }
 .swipe-hint .arr{font-size:26px;animation:bonce 1.3s infinite;}
 @keyframes bonce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.swipe-hint span{font-size:12px;color:var(–muted);letter-spacing:1.5px;text-transform:uppercase;}
+.swipe-hint span{font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
 
 .swipe-reveal{
-position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-flex-direction:column;gap:4px;
-transform:translateY(100%);
-transition:transform 0.38s cubic-bezier(.22,1,.36,1);
-padding:16px 20px;text-align:center;overflow:hidden;
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;
+  transform:translateY(100%);
+  transition:transform 0.38s cubic-bezier(.22,1,.36,1);
+  padding:16px 20px;text-align:center;overflow:hidden;
 }
 .swipe-zone.revealed .swipe-reveal{transform:translateY(0);}
 .swipe-zone.revealed .swipe-hint{opacity:0;}
 
-.word-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(–muted);margin-bottom:2px;}
+.word-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
 .word-text{
-font-family:‘Bebas Neue’,sans-serif;
-font-size:clamp(28px,9vw,48px);
-letter-spacing:2px;line-height:1.1;text-align:center;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,9vw,48px);
+  letter-spacing:2px;line-height:1.1;text-align:center;
 }
-.word-text.es-normal{color:var(–green);}
-.word-text.es-impostor{color:var(–red);}
+.word-text.es-normal{color:var(--green);}
+.word-text.es-impostor{color:var(--red);}
 
 .word-desc{
-font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;
-line-height:1.4;margin-top:8px;
-border-top:1px solid rgba(255,255,255,0.07);
-padding-top:8px;width:100%;
+  font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;
+  line-height:1.4;margin-top:8px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  padding-top:8px;width:100%;
 }
 
 .impostor-chip{
-font-size:10px;letter-spacing:3px;text-transform:uppercase;
-color:var(–red);background:rgba(239,68,68,0.12);
-padding:4px 14px;border-radius:20px;border:1px solid rgba(239,68,68,0.28);margin-top:4px;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--red);background:rgba(239,68,68,0.12);
+  padding:4px 14px;border-radius:20px;border:1px solid rgba(239,68,68,0.28);margin-top:4px;
 }
 
-.turn-footer{font-size:12px;color:var(–muted);margin-top:14px;text-align:center;}
+.turn-footer{font-size:12px;color:var(--muted);margin-top:14px;text-align:center;}
 
 /* ── Result ── */
 .result-card{
-width:100%;background:var(–card);border:1px solid var(–border);
-border-radius:20px;padding:24px 20px;text-align:center;
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:24px 20px;text-align:center;
 }
 .result-emoji{font-size:50px;margin-bottom:10px;}
-.result-title{font-family:‘Bebas Neue’,sans-serif;font-size:34px;letter-spacing:2px;margin-bottom:4px;}
-.result-word-row{font-size:15px;color:var(–muted);margin-bottom:2px;}
-.result-word-row strong{color:var(–text);}
-.result-desc-row{font-size:12px;color:var(–muted);font-style:italic;margin-bottom:16px;line-height:1.4;}
+.result-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;margin-bottom:4px;}
+.result-word-row{font-size:15px;color:var(--muted);margin-bottom:2px;}
+.result-word-row strong{color:var(--text);}
+.result-desc-row{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:16px;line-height:1.4;}
 
 .verdict-hidden{
-background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);
-border-radius:14px;padding:18px;
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);
+  border-radius:14px;padding:18px;
 }
-.verdict-hidden p{font-size:13px;color:var(–yellow);letter-spacing:0.4px;margin-bottom:12px;line-height:1.5;}
+.verdict-hidden p{font-size:13px;color:var(--yellow);letter-spacing:0.4px;margin-bottom:12px;line-height:1.5;}
 .verdict-shown{
-background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.28);
-border-radius:14px;padding:18px;display:none;
+  background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.28);
+  border-radius:14px;padding:18px;display:none;
 }
-.verdict-shown .vl{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(–red);margin-bottom:6px;}
-.verdict-shown .vname{font-family:‘Bebas Neue’,sans-serif;font-size:34px;letter-spacing:2px;color:var(–red);}
+.verdict-shown .vl{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+.verdict-shown .vname{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--red);}
 
-h2{font-family:‘Bebas Neue’,sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px;}
-p.sub{font-size:13px;color:var(–muted);margin-bottom:18px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px;}
+p.sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
 .mt{margin-top:14px;}
 </style>
 
@@ -170,6 +170,13 @@ p.sub{font-size:13px;color:var(–muted);margin-bottom:18px;}
       <label>Impostores</label>
       <input type="range" id="numImpostors" min="1" max="3" value="1" oninput="updateSliders()">
       <div class="slider-val" id="valImpostors">1</div>
+    </div>
+    <div class="slider-row">
+      <label>Pista para impostor</label>
+      <label style="font-size:14px;display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="impostorHint" checked onchange="updateHintOption()">
+        Sí
+      </label>
     </div>
   </div>
   <button class="btn btn-primary mt" style="margin-top:18px;" onclick="goNames()">Poner nombres →</button>
@@ -449,6 +456,11 @@ let numPlayers=5, numImpostors=1;
 let playerNames=[], roles=[];
 let currentEntry={w:'',d:''}, currentTurn=0;
 let revealed=false, touchStartY=0;
+let useImpostorHint=true;
+
+function updateHintOption(){
+  useImpostorHint=document.getElementById('impostorHint').checked;
+}
 
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -510,7 +522,8 @@ function showTurn(){
     ? `<div class="word-label">TU ROL</div>
        <div class="word-text es-impostor">IMPOSTOR</div>
        <div class="impostor-chip">⚠ No te quemes</div>
-       <div class="word-desc">No sabés la palabra. Escuchá a los demás e inventá algo creíble para no quedar expuesto.</div>`
+       <div class="word-desc">No sabés la palabra. Escuchá a los demás e inventá algo creíble para no quedar expuesto.</div>
+       ${useImpostorHint ? `<div class="word-desc">Pista: empieza con <strong>${currentEntry.w[0]}</strong> y tiene <strong>${currentEntry.w.length}</strong> letras.</div>` : ''}`
     : `<div class="word-label">TU PALABRA</div>
        <div class="word-text es-normal">${currentEntry.w}</div>
        <div class="word-desc">${currentEntry.d}</div>`;
