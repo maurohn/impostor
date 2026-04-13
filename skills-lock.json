@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "game-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "computedHash": "0d43de53e1a26b2b2ff5e64047c946e4e6ec1eaa0cf567f8cfe4bffd4f024e20"
+    },
+    "javascript-pro": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "computedHash": "be8d710a5339d1435df48d059cff2a98ab4f13abd65be40ea3e4e03c336fab16"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "computedHash": "6337038fe1fe6bbe1b9f252ab678ee575859190bab6f0f246f4061824eb40875"
+    }
+  }
+}

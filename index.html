@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>El Impostor</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
 
   :root {
-    --bg:#0a0a0f; --card:#1c1c28; --accent:#7c3aed; --accent2:#a855f7;
-    --red:#ef4444; --green:#22c55e; --yellow:#f59e0b;
-    --text:#f1f0ff; --muted:#6b6880; --border:rgba(124,58,237,0.22);
+    --bg:#050508; --card:rgba(20,20,30,0.65); --accent:#8b5cf6; --accent2:#c084fc;
+    --red:#f43f5e; --green:#10b981; --yellow:#fbbf24;
+    --text:#f8fafc; --muted:#94a3b8; --border:rgba(139,92,246,0.3);
+    --glow:rgba(139,92,246,0.5);
   }
 
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -19,139 +20,206 @@
     background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
     min-height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center;
   }
+  
   body::before{
     content:'';position:fixed;inset:0;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:2;
   }
+
+  .blobs-container { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:0.6; animation:float 12s infinite ease-in-out alternate; }
+  .blob1 { top:-10%; left:-10%; width:50vw; height:50vw; background:var(--accent); }
+  .blob2 { bottom:-10%; right:-10%; width:60vw; height:60vw; background:#4f46e5; animation-delay:-4s; }
+  .blob3 { top:40%; right:-20%; width:40vw; height:40vw; background:var(--red); animation-delay:-8s; opacity:0.4; }
+  
+  @keyframes float { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(10%,10%) scale(1.1);} }
 
   .screen{
     display:none;width:100%;max-width:440px;min-height:100dvh;
     padding:28px 20px;flex-direction:column;align-items:center;justify-content:center;
-    position:relative;z-index:1;animation:fadeIn 0.3s ease;
+    position:relative;z-index:10;animation:fadeIn 0.4s cubic-bezier(0.2,0.8,0.2,1);
   }
   .screen.active{display:flex;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0;transform:scale(0.95) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
 
   .logo{
-    font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,15vw,84px);letter-spacing:5px;
-    background:linear-gradient(135deg,#a855f7 0%,#7c3aed 50%,#4f46e5 100%);
+    font-family:'Bebas Neue',sans-serif;font-size:clamp(60px,16vw,90px);letter-spacing:6px;
+    background:linear-gradient(135deg,#c084fc 0%,#8b5cf6 50%,#4f46e5 100%);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;text-align:center;
+    filter:drop-shadow(0 0 20px rgba(139,92,246,0.5));
   }
-  .logo-sub{font-size:11px;letter-spacing:6px;color:var(--muted);text-transform:uppercase;margin-top:5px;text-align:center;}
+  .logo-sub{font-size:12px;letter-spacing:8px;color:var(--text);opacity:0.7;text-transform:uppercase;margin-top:6px;text-align:center;font-weight:700;}
 
-  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;width:100%;}
+  .card, .swipe-zone, .result-card {
+    background:var(--card); box-shadow:0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:26px; width:100%;
+  }
 
-  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .swipe-zone {
+    border:1px solid var(--border); box-shadow:0 0 30px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+    height:280px; overflow:hidden; position:relative; cursor:grab; user-select:none;
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  
+  .swipe-zone::before {
+    content:''; position:absolute; inset:0; background:linear-gradient(180deg, transparent, rgba(139,92,246,0.05));
+    pointer-events:none;
+  }
+
+  .slider-row{display:flex;align-items:center;gap:15px;margin-bottom:18px;}
   .slider-row:last-child{margin-bottom:0;}
-  .slider-row label{font-size:13px;color:var(--muted);min-width:88px;}
-  .slider-row input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer;}
-  .slider-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent2);min-width:26px;text-align:right;}
+  .slider-row label{font-size:14px;color:rgba(255,255,255,0.8);min-width:100px;font-weight:500;}
+  .slider-row input[type=range]{flex:1;accent-color:var(--accent2);cursor:pointer; height:6px; border-radius:3px; background:rgba(255,255,255,0.1);}
+  .slider-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent2);min-width:30px;text-align:right;}
+  
+  input[type="checkbox"] {
+    appearance:none; width:44px; height:24px; background:rgba(255,255,255,0.1); border-radius:12px;
+    position:relative; cursor:pointer; outline:none; transition:0.3s;
+  }
+  input[type="checkbox"]::after {
+    content:''; position:absolute; top:2px; left:2px; width:20px; height:20px;
+    background:#fff; border-radius:50%; transition:0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  input[type="checkbox"]:checked { background:var(--accent); box-shadow:0 0 15px var(--accent); }
+  input[type="checkbox"]:checked::after { transform:translateX(20px); }
 
   .btn{
-    display:block;width:100%;padding:15px;border-radius:14px;border:none;cursor:pointer;
-    font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.4px;transition:all 0.15s;
+    display:flex; align-items:center; justify-content:center; width:100%; padding:16px; border-radius:16px; border:none; cursor:pointer;
+    font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.5px;transition:all 0.2s cubic-bezier(0.2,0.8,0.2,1);
   }
-  .btn-primary{background:linear-gradient(135deg,var(--accent),#4f46e5);color:#fff;box-shadow:0 4px 22px rgba(124,58,237,0.38);}
-  .btn-primary:active{transform:scale(0.97);box-shadow:none;}
-  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:14px;margin-top:10px;}
-  .btn-ghost:active{background:rgba(255,255,255,0.04);}
-  .btn-red{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;box-shadow:0 4px 20px rgba(239,68,68,0.32);}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;
+    box-shadow:0 8px 25px rgba(139,92,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-primary:active{transform:scale(0.96);box-shadow:0 4px 15px rgba(139,92,246,0.3);}
+  .btn-ghost{background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); font-size:15px; margin-top:12px;}
+  .btn-ghost:active{background:rgba(255,255,255,0.08); transform:scale(0.98);}
+  
+  .btn-red{
+    background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;
+    box-shadow:0 8px 25px rgba(244,63,94,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .pulse-btn { animation: pulseRed 2s infinite; }
+  @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(244,63,94,0.6); } 70% { box-shadow: 0 0 0 15px rgba(244,63,94,0); } 100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); } }
 
-  .players-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:18px;max-height:55dvh;overflow-y:auto;}
+  .players-list{width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:20px;max-height:50dvh;overflow-y:auto; padding-right:4px;}
+  .players-list::-webkit-scrollbar { width: 4px; }
+  .players-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  
   .player-item{
-    background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;
-    padding:11px 15px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+    background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:14px;
+    padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0; transition:0.2s;
   }
-  .player-item input{background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;flex:1;}
-  .player-item input::placeholder{color:var(--muted);}
-  .pnum{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent2);min-width:22px;}
+  .player-item:focus-within { border-color:var(--accent); background:rgba(139,92,246,0.05); }
+  .player-item input{background:transparent;border:none;outline:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;flex:1;}
+  .player-item input::placeholder{color:rgba(255,255,255,0.3);}
+  .pnum{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent2);min-width:24px; opacity:0.8;}
 
-  .player-badge{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
-  .player-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,11vw,60px);letter-spacing:2px;line-height:1;text-align:center;margin-bottom:4px;}
-  .player-sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+  .player-badge{font-size:12px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:6px; font-weight:700;}
+  .player-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(46px,12vw,68px);letter-spacing:3px;line-height:1;text-align:center;margin-bottom:4px; text-shadow:0 0 20px rgba(255,255,255,0.2);}
+  .player-sub{color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:24px;font-weight:500;}
 
-  .progress{width:100%;height:3px;background:rgba(255,255,255,0.07);border-radius:9px;margin-bottom:22px;overflow:hidden;}
-  .progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:9px;transition:width 0.4s ease;}
+  .progress{width:100%;height:4px;background:rgba(255,255,255,0.05);border-radius:10px;margin-bottom:28px;overflow:hidden;}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px;transition:width 0.5s cubic-bezier(0.2,0.8,0.2,1); box-shadow:0 0 10px var(--accent);}
 
-  /* ── Swipe zone ── */
-  .swipe-zone{
-    width:100%;background:var(--card);border:1px solid var(--border);
-    border-radius:24px;overflow:hidden;position:relative;
-    height:250px;cursor:grab;user-select:none;
-  }
   .swipe-hint{
     position:absolute;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:8px;
-    pointer-events:none;transition:opacity 0.2s;
+    align-items:center;justify-content:center;gap:12px;
+    pointer-events:none;transition:opacity 0.3s;
   }
-  .swipe-hint .arr{font-size:26px;animation:bonce 1.3s infinite;}
-  @keyframes bonce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-  .swipe-hint span{font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+  .swipe-hint .arr{
+    width:50px; height:50px; border-radius:50%; background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; color:var(--accent2);
+    animation: bounceTouch 2s infinite cubic-bezier(0.2,0.8,0.2,1);
+    box-shadow: 0 0 20px rgba(139,92,246,0.2);
+  }
+  @keyframes bounceTouch { 
+    0%,100%{transform:translateY(0) scale(1); box-shadow: 0 0 20px rgba(139,92,246,0.2);} 
+    50%{transform:translateY(-15px) scale(1.05); box-shadow: 0 0 30px rgba(139,92,246,0.5); background:rgba(139,92,246,0.2);} 
+  }
+  .swipe-hint span{font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase; font-weight:700;}
 
   .swipe-reveal{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    flex-direction:column;gap:4px;
+    flex-direction:column;gap:6px;
     transform:translateY(100%);
-    transition:transform 0.38s cubic-bezier(.22,1,.36,1);
-    padding:16px 20px;text-align:center;overflow:hidden;
+    transition:transform 0.45s cubic-bezier(0.2,1,0.3,1); 
+    padding:20px 24px;text-align:center;overflow:hidden;
+    background:rgba(20,20,30,0.95);
   }
-  .swipe-zone.revealed .swipe-reveal{transform:translateY(0);}
-  .swipe-zone.revealed .swipe-hint{opacity:0;}
+  .swipe-zone.revealed .swipe-reveal{transform:translateY(0); box-shadow:inset 0 0 50px rgba(0,0,0,0.5);}
+  .swipe-zone.revealed .swipe-hint{opacity:0; transition:opacity 0.1s;}
 
-  .word-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .word-label{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px; font-weight:700;}
   .word-text{
     font-family:'Bebas Neue',sans-serif;
-    font-size:clamp(28px,9vw,48px);
-    letter-spacing:2px;line-height:1.1;text-align:center;
+    font-size:clamp(36px,10vw,56px);
+    letter-spacing:3px;line-height:1.1;text-align:center;
   }
-  .word-text.es-normal{color:var(--green);}
-  .word-text.es-impostor{color:var(--red);}
+  .word-text.es-normal{color:var(--green); text-shadow:0 0 20px rgba(16,185,129,0.4);}
+  .word-text.es-impostor{color:var(--red); text-shadow:0 0 25px rgba(244,63,94,0.5);}
 
   .word-desc{
-    font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;
-    line-height:1.4;margin-top:8px;
-    border-top:1px solid rgba(255,255,255,0.07);
-    padding-top:8px;width:100%;
+    font-size:14px;color:rgba(255,255,255,0.6);
+    line-height:1.5;margin-top:12px;
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-top:12px;width:100%; font-weight:500;
   }
 
   .impostor-chip{
-    font-size:10px;letter-spacing:3px;text-transform:uppercase;
-    color:var(--red);background:rgba(239,68,68,0.12);
-    padding:4px 14px;border-radius:20px;border:1px solid rgba(239,68,68,0.28);margin-top:4px;
+    font-size:11px;letter-spacing:4px;text-transform:uppercase; font-weight:700;
+    color:var(--red);background:rgba(244,63,94,0.15);
+    padding:6px 16px;border-radius:20px;border:1px solid rgba(244,63,94,0.4);margin-top:6px;
+    box-shadow: 0 0 15px rgba(244,63,94,0.2);
   }
 
-  .turn-footer{font-size:12px;color:var(--muted);margin-top:14px;text-align:center;}
+  .turn-footer{font-size:13px;color:rgba(255,255,255,0.5);margin-top:18px;text-align:center;font-weight:500;}
 
-  /* ── Result ── */
-  .result-card{
-    width:100%;background:var(--card);border:1px solid var(--border);
-    border-radius:20px;padding:24px 20px;text-align:center;
-  }
-  .result-emoji{font-size:50px;margin-bottom:10px;}
-  .result-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;margin-bottom:4px;}
-  .result-word-row{font-size:15px;color:var(--muted);margin-bottom:2px;}
-  .result-word-row strong{color:var(--text);}
-  .result-desc-row{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:16px;line-height:1.4;}
+  /* RESULTADOS */
+  .result-emoji{font-size:56px;margin-bottom:12px; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));}
+  .result-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:3px;margin-bottom:8px; color:#fff;}
+  .result-word-row{font-size:16px;color:rgba(255,255,255,0.7);margin-bottom:4px;}
+  .result-word-row strong{color:var(--accent2); font-size:18px;}
+  .result-desc-row{font-size:13px;color:rgba(255,255,255,0.5);font-style:italic;margin-bottom:20px;line-height:1.5;}
 
   .verdict-hidden{
-    background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);
-    border-radius:14px;padding:18px;
+    background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);
+    border-radius:16px;padding:22px 18px;
   }
-  .verdict-hidden p{font-size:13px;color:var(--yellow);letter-spacing:0.4px;margin-bottom:12px;line-height:1.5;}
+  .verdict-hidden p{font-size:14px;color:var(--yellow);letter-spacing:0.5px;margin-bottom:14px;line-height:1.5; font-weight:500;}
+  
   .verdict-shown{
-    background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.28);
-    border-radius:14px;padding:18px;display:none;
+    background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.3);
+    border-radius:16px;padding:24px 18px;display:none;
+    box-shadow: 0 0 30px rgba(244,63,94,0.15);
+    animation: scaleIn 0.5s cubic-bezier(0.2,0.8,0.2,1);
   }
-  .verdict-shown .vl{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
-  .verdict-shown .vname{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--red);}
+  @keyframes scaleIn { from{transform:scale(0.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+  
+  .verdict-shown .vl{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:rgba(244,63,94,0.8);margin-bottom:8px; font-weight:700;}
+  .verdict-shown .vname{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:3px;color:var(--red); text-shadow:0 0 15px rgba(244,63,94,0.4);}
 
-  h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px;}
-  p.sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
-  .mt{margin-top:14px;}
+  .timer-box { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--accent2); text-align: center; margin: 15px 0; letter-spacing: 4px; text-shadow: 0 0 20px rgba(192,132,252,0.4); }
+  .timer-box.urgent { color: var(--red); animation: pulseTimer 1s infinite; text-shadow: 0 0 20px rgba(244,63,94,0.6); }
+  @keyframes pulseTimer { 0% { opacity: 1; } 50% { opacity: 0.5; transform: scale(0.96); } 100% { opacity: 1; } }
+
+  h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;margin-bottom:6px; color:#fff;}
+  p.sub{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:22px;}
+  .mt{margin-top:16px;}
+
 </style>
 </head>
 <body>
+<!-- BLOBS ANIMADOS -->
+<div class="blobs-container">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
 
 <!-- ══ SETUP ══ -->
 <div class="screen active" id="s-setup">
@@ -167,6 +235,10 @@
       <label>Impostores</label>
       <input type="range" id="numImpostors" min="1" max="3" value="1" oninput="updateSliders()">
       <div class="slider-val" id="valImpostors">1</div>
+    </div>
+    <div class="slider-row" style="margin-top:12px;">
+      <label for="useHints" style="flex:1; cursor:pointer;">Pista para Impostores</label>
+      <input type="checkbox" id="useHints" style="width:20px;height:20px;accent-color:var(--accent);cursor:pointer;">
     </div>
   </div>
   <button class="btn btn-primary mt" style="margin-top:18px;" onclick="goNames()">Poner nombres →</button>
@@ -209,8 +281,13 @@
     <div class="result-word-row">La palabra era: <strong id="resWord"></strong></div>
     <div class="result-desc-row" id="resDesc"></div>
     <div class="verdict-hidden" id="verdictHidden">
-      <p>Discutan entre todos quién creen que es el impostor. Cuando voten, revelen acá 👇</p>
-      <button class="btn btn-red" onclick="revelarImpostor()">🔍 Revelar Impostor</button>
+      <p>Discutan entre todos quién creen que es el impostor.</p>
+      <div id="timerContainer">
+        <div class="timer-box" id="timerDisplay">2:00</div>
+        <button class="btn btn-ghost" id="timerBtn" style="margin-top:0; margin-bottom:15px;" onclick="toggleTimer()">Empezar Debate</button>
+      </div>
+      <p>Cuando voten, revelen acá 👇</p>
+      <button class="btn btn-red pulse-btn" onclick="revelarImpostor()">🔍 Revelar Impostor</button>
     </div>
     <div class="verdict-shown" id="verdictShown">
       <div class="vl">El impostor era</div>
@@ -227,221 +304,222 @@
 // ══════════════════════════════════════════════════════════════
 const WORDS = [
   // ── Comida y bebida ──
-  {w:"Empanada",           d:"Masa rellena y doblada, símbolo de cualquier reunión argentina"},
-  {w:"Asado",              d:"Carne a las brasas, ritual sagrado del domingo familiar"},
-  {w:"Milanesa",           d:"Carne apanada y frita, el plato más querido del país"},
-  {w:"Choripán",           d:"Chorizo en pan, infaltable en canchas y manifestaciones"},
-  {w:"Medialunas",         d:"Facturas de manteca en forma de cuerno, van con café con leche"},
-  {w:"Facturas",           d:"Masas dulces de panadería: vigilantes, palmeras, cañoncitos"},
-  {w:"Mate",               d:"Infusión de yerba con agua caliente que se comparte en ronda"},
-  {w:"Alfajor",            d:"Dos tapas de masa con dulce de leche en el medio"},
-  {w:"Dulce de leche",     d:"Crema caramelizada de leche, va en todo: pan, tortas, alfajores"},
-  {w:"Chimichurri",        d:"Aderezo verde de perejil y ajo, el compañero del asado"},
-  {w:"Provoleta",          d:"Queso provolone grillado a la parrilla con orégano"},
-  {w:"Morcilla",           d:"Embutido de sangre cocida, sale junto al chorizo en el asado"},
-  {w:"Locro",              d:"Guiso espeso de maíz, porotos y carne, típico del 25 de mayo"},
-  {w:"Matambre",           d:"Carne finita arrollada con relleno, se come fría o caliente"},
-  {w:"Fugazza",            d:"Pizza alta con cebolla y sin salsa, variante porteña única"},
-  {w:"Pasta frola",        d:"Tarta de masa con relleno de membrillo o batata"},
-  {w:"Torta frita",        d:"Masa frita en grasa, clásico de los días de lluvia en el campo"},
-  {w:"Fernet con coca",    d:"El trago infaltable en cualquier previa o boliche argentino"},
-  {w:"Sorrentinos",        d:"Pasta rellena circular y grande, típica de Mar del Plata"},
-  {w:"Revuelto gramajo",   d:"Mezcla de papas paja con jamón y huevo revuelto"},
-  {w:"Milanesa napolitana",d:"Milanesa con salsa de tomate, jamón y queso derretido encima"},
-  {w:"Guiso de lentejas",  d:"Plato de cuchara con lentejas, verduras y un poco de carne"},
-  {w:"Tuco",               d:"Salsa de tomate cocinada lento, la base de los fideos caseros"},
-  {w:"Pionono",            d:"Bizcochuelo finito arrollado con dulce de leche o relleno salado"},
-  {w:"Submarino",          d:"Barra de chocolate sumergida en leche caliente para derretirse"},
-  {w:"Clericó",            d:"Ponche de vino con frutas picadas, el hit del verano"},
-  {w:"Pizza de cancha",    d:"Pizza cuadrada, alta y grasosa que se vende en los estadios"},
-  {w:"Bondiola al pan",    d:"Sándwich de cerdo a la parrilla, el rival del choripán"},
-  {w:"Bizcochitos de grasa",d:"Galletitas saladas de grasa, ideales para acompañar el mate"},
-  {w:"Humita en chala",    d:"Pasta de choclo envuelta en hojas de maíz, cocida al vapor"},
+  {w:"Empanada",           d:"Masa rellena y doblada, símbolo de cualquier reunión argentina", c:"Comida y bebida"},
+  {w:"Asado",              d:"Carne a las brasas, ritual sagrado del domingo familiar", c:"Comida y bebida"},
+  {w:"Milanesa",           d:"Carne apanada y frita, el plato más querido del país", c:"Comida y bebida"},
+  {w:"Choripán",           d:"Chorizo en pan, infaltable en canchas y manifestaciones", c:"Comida y bebida"},
+  {w:"Medialunas",         d:"Facturas de manteca en forma de cuerno, van con café con leche", c:"Comida y bebida"},
+  {w:"Facturas",           d:"Masas dulces de panadería: vigilantes, palmeras, cañoncitos", c:"Comida y bebida"},
+  {w:"Mate",               d:"Infusión de yerba con agua caliente que se comparte en ronda", c:"Comida y bebida"},
+  {w:"Alfajor",            d:"Dos tapas de masa con dulce de leche en el medio", c:"Comida y bebida"},
+  {w:"Dulce de leche",     d:"Crema caramelizada de leche, va en todo: pan, tortas, alfajores", c:"Comida y bebida"},
+  {w:"Chimichurri",        d:"Aderezo verde de perejil y ajo, el compañero del asado", c:"Comida y bebida"},
+  {w:"Provoleta",          d:"Queso provolone grillado a la parrilla con orégano", c:"Comida y bebida"},
+  {w:"Morcilla",           d:"Embutido de sangre cocida, sale junto al chorizo en el asado", c:"Comida y bebida"},
+  {w:"Locro",              d:"Guiso espeso de maíz, porotos y carne, típico del 25 de mayo", c:"Comida y bebida"},
+  {w:"Matambre",           d:"Carne finita arrollada con relleno, se come fría o caliente", c:"Comida y bebida"},
+  {w:"Fugazza",            d:"Pizza alta con cebolla y sin salsa, variante porteña única", c:"Comida y bebida"},
+  {w:"Pasta frola",        d:"Tarta de masa con relleno de membrillo o batata", c:"Comida y bebida"},
+  {w:"Torta frita",        d:"Masa frita en grasa, clásico de los días de lluvia en el campo", c:"Comida y bebida"},
+  {w:"Fernet con coca",    d:"El trago infaltable en cualquier previa o boliche argentino", c:"Comida y bebida"},
+  {w:"Sorrentinos",        d:"Pasta rellena circular y grande, típica de Mar del Plata", c:"Comida y bebida"},
+  {w:"Revuelto gramajo",   d:"Mezcla de papas paja con jamón y huevo revuelto", c:"Comida y bebida"},
+  {w:"Milanesa napolitana",d:"Milanesa con salsa de tomate, jamón y queso derretido encima", c:"Comida y bebida"},
+  {w:"Guiso de lentejas",  d:"Plato de cuchara con lentejas, verduras y un poco de carne", c:"Comida y bebida"},
+  {w:"Tuco",               d:"Salsa de tomate cocinada lento, la base de los fideos caseros", c:"Comida y bebida"},
+  {w:"Pionono",            d:"Bizcochuelo finito arrollado con dulce de leche o relleno salado", c:"Comida y bebida"},
+  {w:"Submarino",          d:"Barra de chocolate sumergida en leche caliente para derretirse", c:"Comida y bebida"},
+  {w:"Clericó",            d:"Ponche de vino con frutas picadas, el hit del verano", c:"Comida y bebida"},
+  {w:"Pizza de cancha",    d:"Pizza cuadrada, alta y grasosa que se vende en los estadios", c:"Comida y bebida"},
+  {w:"Bondiola al pan",    d:"Sándwich de cerdo a la parrilla, el rival del choripán", c:"Comida y bebida"},
+  {w:"Bizcochitos de grasa",d:"Galletitas saladas de grasa, ideales para acompañar el mate", c:"Comida y bebida"},
+  {w:"Humita en chala",    d:"Pasta de choclo envuelta en hojas de maíz, cocida al vapor", c:"Comida y bebida"},
 
   // ── Lugares ──
-  {w:"Kiosco",             d:"El negocio más importante del barrio, abre a cualquier hora"},
-  {w:"Almacén",            d:"Negocio de barrio que vende fiado y tiene de todo un poco"},
-  {w:"Verdulería",         d:"Local de frutas y verduras, suele ser atendido por familia boliviana"},
-  {w:"Panadería",          d:"El olor más rico del barrio, vende pan y facturas desde temprano"},
-  {w:"Rotisería",          d:"Vende comida preparada para llevar: milanesas, pollo, ensaladas"},
-  {w:"Quincho",            d:"Galería techada con parrilla, el lugar sagrado del asado"},
-  {w:"Boliche",            d:"Discoteca, lugar de baile nocturno con mucho ruido"},
-  {w:"Bailanta",           d:"Local de cumbia villera con mucho ambiente popular"},
-  {w:"Peña",               d:"Local donde se toca folclore y se come y baila toda la noche"},
-  {w:"Cancha de fútbol 5", d:"Cancha sintética pequeña donde todos son Messi los sábados"},
-  {w:"Polideportivo",      d:"Complejo deportivo municipal con pileta, gimnasio y canchas"},
-  {w:"Feria americana",    d:"Mercado de ropa usada donde se consigue cualquier cosa barata"},
-  {w:"Mayorista",          d:"Super donde comprás por cantidad para ahorrar plata"},
-  {w:"Supermercado chino", d:"Negocio de chinos que abre siempre, tiene de todo y cobra con QR"},
-  {w:"Remisería",          d:"Local donde pedís un remis, más barato que el taxi"},
-  {w:"Terminal de micros", d:"Donde salen y llegan los colectivos de larga distancia"},
-  {w:"Conventillo",        d:"Casa vieja con muchas habitaciones alquiladas y patio compartido"},
-  {w:"Barrio privado",     d:"Country amurallado con seguridad privada y casas grandes"},
-  {w:"Salón de fiestas",   d:"Lugar alquilado para casamientos, cumples de 15 y bautismos"},
-  {w:"Mercado central",    d:"Enorme mercado de frutas y verduras al por mayor, abre de madrugada"},
+  {w:"Kiosco",             d:"El negocio más importante del barrio, abre a cualquier hora", c:"Lugares"},
+  {w:"Almacén",            d:"Negocio de barrio que vende fiado y tiene de todo un poco", c:"Lugares"},
+  {w:"Verdulería",         d:"Local de frutas y verduras, suele ser atendido por familia boliviana", c:"Lugares"},
+  {w:"Panadería",          d:"El olor más rico del barrio, vende pan y facturas desde temprano", c:"Lugares"},
+  {w:"Rotisería",          d:"Vende comida preparada para llevar: milanesas, pollo, ensaladas", c:"Lugares"},
+  {w:"Quincho",            d:"Galería techada con parrilla, el lugar sagrado del asado", c:"Lugares"},
+  {w:"Boliche",            d:"Discoteca, lugar de baile nocturno con mucho ruido", c:"Lugares"},
+  {w:"Bailanta",           d:"Local de cumbia villera con mucho ambiente popular", c:"Lugares"},
+  {w:"Peña",               d:"Local donde se toca folclore y se come y baila toda la noche", c:"Lugares"},
+  {w:"Cancha de fútbol 5", d:"Cancha sintética pequeña donde todos son Messi los sábados", c:"Lugares"},
+  {w:"Polideportivo",      d:"Complejo deportivo municipal con pileta, gimnasio y canchas", c:"Lugares"},
+  {w:"Feria americana",    d:"Mercado de ropa usada donde se consigue cualquier cosa barata", c:"Lugares"},
+  {w:"Mayorista",          d:"Super donde comprás por cantidad para ahorrar plata", c:"Lugares"},
+  {w:"Supermercado chino", d:"Negocio de chinos que abre siempre, tiene de todo y cobra con QR", c:"Lugares"},
+  {w:"Remisería",          d:"Local donde pedís un remis, más barato que el taxi", c:"Lugares"},
+  {w:"Terminal de micros", d:"Donde salen y llegan los colectivos de larga distancia", c:"Lugares"},
+  {w:"Conventillo",        d:"Casa vieja con muchas habitaciones alquiladas y patio compartido", c:"Lugares"},
+  {w:"Barrio privado",     d:"Country amurallado con seguridad privada y casas grandes", c:"Lugares"},
+  {w:"Salón de fiestas",   d:"Lugar alquilado para casamientos, cumples de 15 y bautismos", c:"Lugares"},
+  {w:"Mercado central",    d:"Enorme mercado de frutas y verduras al por mayor, abre de madrugada", c:"Lugares"},
 
   // ── Transporte ──
-  {w:"Colectivo",          d:"El bondi, el transporte público más usado de Argentina"},
-  {w:"Subte",              d:"Tren subterráneo porteño, en hora pico es una lata de sardinas"},
-  {w:"Remis",              d:"Auto particular como taxi pero con precio acordado de antemano"},
-  {w:"Tachero",            d:"Taxista porteño que te habla de política en todo el viaje"},
-  {w:"Paro de transporte", d:"Cuando no hay colectivos ni trenes y llegás tarde a todo"},
-  {w:"Peaje",              d:"Cabina donde pagás para seguir viaje en la autopista"},
-  {w:"Moto mensajería",    d:"El que te trae la pizza o el pedido en menos de 30 minutos"},
-  {w:"Micro de larga distancia",d:"El bondi que te lleva de Buenos Aires a Córdoba o Mendoza"},
-  {w:"Grúa municipal",     d:"La que se lleva tu auto si estacionás mal, la pesadilla urbana"},
-  {w:"Bicisenda",          d:"Carril pintado en la calle exclusivo para las bicicletas"},
+  {w:"Colectivo",          d:"El bondi, el transporte público más usado de Argentina", c:"Transporte"},
+  {w:"Subte",              d:"Tren subterráneo porteño, en hora pico es una lata de sardinas", c:"Transporte"},
+  {w:"Remis",              d:"Auto particular como taxi pero con precio acordado de antemano", c:"Transporte"},
+  {w:"Tachero",            d:"Taxista porteño que te habla de política en todo el viaje", c:"Transporte"},
+  {w:"Paro de transporte", d:"Cuando no hay colectivos ni trenes y llegás tarde a todo", c:"Transporte"},
+  {w:"Peaje",              d:"Cabina donde pagás para seguir viaje en la autopista", c:"Transporte"},
+  {w:"Moto mensajería",    d:"El que te trae la pizza o el pedido en menos de 30 minutos", c:"Transporte"},
+  {w:"Micro de larga distancia",d:"El bondi que te lleva de Buenos Aires a Córdoba o Mendoza", c:"Transporte"},
+  {w:"Grúa municipal",     d:"La que se lleva tu auto si estacionás mal, la pesadilla urbana", c:"Transporte"},
+  {w:"Bicisenda",          d:"Carril pintado en la calle exclusivo para las bicicletas", c:"Transporte"},
 
   // ── Deportes y juegos ──
-  {w:"Truco",              d:"Juego de cartas con señas y engaños, se grita Truco o Envido"},
-  {w:"Generala",           d:"Juego de dados donde buscás combinaciones, la generala vale doble"},
-  {w:"Bochas",             d:"Juego de bolas de metal que juegan los abuelos en la plaza"},
-  {w:"Tejo",               d:"Tirás un disco de metal apuntando a un palo con pólvora"},
-  {w:"Metegol",            d:"Mesa con jugadores de plástico giratorios, se juega en bares"},
-  {w:"Bolitas",            d:"Juego de canicas de vidrio, se perdió con los celulares"},
-  {w:"Rayuela",            d:"Saltás en un pie sobre cuadros dibujados en el piso"},
-  {w:"Fútbol de playa",    d:"Fútbol descalzo en la arena, imprescindible en verano"},
-  {w:"Padel",              d:"Deporte de raqueta en cancha cerrada, furor de los últimos años"},
-  {w:"Pileta inflable",    d:"Pileta de plástico que se arma en el fondo de la casa en verano"},
-  {w:"Partido de barrio",  d:"Fútbol informal con arcos de ropa y árbitro muy discutido"},
-  {w:"Escoba del quince",  d:"Juego de cartas donde tenés que sumar quince con las de la mesa"},
-  {w:"Carrera de embolsados",d:"Competencia donde saltás dentro de una bolsa, clásico de kermesse"},
-  {w:"Chinchón",           d:"Juego de cartas donde tenés que bajar combinaciones en la mesa"},
+  {w:"Truco",              d:"Juego de cartas con señas y engaños, se grita Truco o Envido", c:"Deportes y juegos"},
+  {w:"Generala",           d:"Juego de dados donde buscás combinaciones, la generala vale doble", c:"Deportes y juegos"},
+  {w:"Bochas",             d:"Juego de bolas de metal que juegan los abuelos en la plaza", c:"Deportes y juegos"},
+  {w:"Tejo",               d:"Tirás un disco de metal apuntando a un palo con pólvora", c:"Deportes y juegos"},
+  {w:"Metegol",            d:"Mesa con jugadores de plástico giratorios, se juega en bares", c:"Deportes y juegos"},
+  {w:"Bolitas",            d:"Juego de canicas de vidrio, se perdió con los celulares", c:"Deportes y juegos"},
+  {w:"Rayuela",            d:"Saltás en un pie sobre cuadros dibujados en el piso", c:"Deportes y juegos"},
+  {w:"Fútbol de playa",    d:"Fútbol descalzo en la arena, imprescindible en verano", c:"Deportes y juegos"},
+  {w:"Padel",              d:"Deporte de raqueta en cancha cerrada, furor de los últimos años", c:"Deportes y juegos"},
+  {w:"Pileta inflable",    d:"Pileta de plástico que se arma en el fondo de la casa en verano", c:"Deportes y juegos"},
+  {w:"Partido de barrio",  d:"Fútbol informal con arcos de ropa y árbitro muy discutido", c:"Deportes y juegos"},
+  {w:"Escoba del quince",  d:"Juego de cartas donde tenés que sumar quince con las de la mesa", c:"Deportes y juegos"},
+  {w:"Carrera de embolsados",d:"Competencia donde saltás dentro de una bolsa, clásico de kermesse", c:"Deportes y juegos"},
+  {w:"Chinchón",           d:"Juego de cartas donde tenés que bajar combinaciones en la mesa", c:"Deportes y juegos"},
 
   // ── Objetos cotidianos ──
-  {w:"Birome",             d:"Bolígrafo, lapicera. En Argentina no existe el 'bolígrafo'"},
-  {w:"Cuaderno Gloria",    d:"El cuaderno cuadriculado de tapa dura que usaste en la primaria"},
-  {w:"Mate de calabaza",   d:"El recipiente natural para tomar mate, el más tradicional de todos"},
-  {w:"Pava eléctrica",     d:"La que calienta el agua del mate en dos minutos"},
-  {w:"Garrafa",            d:"El tubo naranja de gas que se usa cuando no llega el gas natural"},
-  {w:"Naipe español",      d:"Las cartas con espadas, bastos, copas y oros para el truco"},
-  {w:"Escobillón",         d:"El palo con cepillo para limpiar el inodoro"},
-  {w:"Persiana",           d:"Cortina de plástico o metal que baja para oscurecer la habitación"},
-  {w:"Ventilador de pie",  d:"El que se usa en verano porque el aire acondicionado cuesta caro"},
-  {w:"Lavarropas de carga superior",d:"El lavarropas que abrís de arriba, el más común en los hogares"},
-  {w:"Termo Stanley",      d:"Termo metálico para el agua caliente del mate, el favorito"},
+  {w:"Birome",             d:"Bolígrafo, lapicera. En Argentina no existe el 'bolígrafo'", c:"Objetos cotidianos"},
+  {w:"Cuaderno Gloria",    d:"El cuaderno cuadriculado de tapa dura que usaste en la primaria", c:"Objetos cotidianos"},
+  {w:"Mate de calabaza",   d:"El recipiente natural para tomar mate, el más tradicional de todos", c:"Objetos cotidianos"},
+  {w:"Pava eléctrica",     d:"La que calienta el agua del mate en dos minutos", c:"Objetos cotidianos"},
+  {w:"Garrafa",            d:"El tubo naranja de gas que se usa cuando no llega el gas natural", c:"Objetos cotidianos"},
+  {w:"Naipe español",      d:"Las cartas con espadas, bastos, copas y oros para el truco", c:"Objetos cotidianos"},
+  {w:"Escobillón",         d:"El palo con cepillo para limpiar el inodoro", c:"Objetos cotidianos"},
+  {w:"Persiana",           d:"Cortina de plástico o metal que baja para oscurecer la habitación", c:"Objetos cotidianos"},
+  {w:"Ventilador de pie",  d:"El que se usa en verano porque el aire acondicionado cuesta caro", c:"Objetos cotidianos"},
+  {w:"Lavarropas de carga superior",d:"El lavarropas que abrís de arriba, el más común en los hogares", c:"Objetos cotidianos"},
+  {w:"Termo Stanley",      d:"Termo metálico para el agua caliente del mate, el favorito", c:"Objetos cotidianos"},
 
   // ── Personas ──
-  {w:"Verdulero",          d:"El que te vende frutas y verduras y siempre te da yapa de cilantro"},
-  {w:"Gasista",            d:"El que arregla el calefón y aparece tres días después de llamarlo"},
-  {w:"Plomero",            d:"El que destapa la pileta y dice 'acá hubo un desastre, señora'"},
-  {w:"Colectivero",        d:"Chofer del bondi que frena de golpe y arranca antes de que subas"},
-  {w:"Trapito",            d:"Te cuida el auto en la calle a cambio de propina, sin que lo pidas"},
-  {w:"Cartero",            d:"El que trae las cartas y encomiendas, cada vez menos visto"},
-  {w:"Encargado del edificio",d:"El portero que sabe todo lo que pasa en el consorcio"},
-  {w:"Cajera del super",   d:"Escanea todo rapidísimo mientras vos todavía buscás la bolsa"},
-  {w:"Médico de guardia",  d:"El que te atiende a las 3am en urgencias del hospital público"},
-  {w:"Maestra jardinera",  d:"La profe del jardín de infantes, tiene paciencia infinita"},
-  {w:"Barrabrava",         d:"La hinchada organizada y violenta de un club de fútbol"},
-  {w:"Puntero político",   d:"Referente de barrio que moviliza gente a cambio de favores"},
-  {w:"Inspector de colectivos",d:"Sube al bondi a revisar que hayas pagado el boleto"},
+  {w:"Verdulero",          d:"El que te vende frutas y verduras y siempre te da yapa de cilantro", c:"Personas"},
+  {w:"Gasista",            d:"El que arregla el calefón y aparece tres días después de llamarlo", c:"Personas"},
+  {w:"Plomero",            d:"El que destapa la pileta y dice 'acá hubo un desastre, señora'", c:"Personas"},
+  {w:"Colectivero",        d:"Chofer del bondi que frena de golpe y arranca antes de que subas", c:"Personas"},
+  {w:"Trapito",            d:"Te cuida el auto en la calle a cambio de propina, sin que lo pidas", c:"Personas"},
+  {w:"Cartero",            d:"El que trae las cartas y encomiendas, cada vez menos visto", c:"Personas"},
+  {w:"Encargado del edificio",d:"El portero que sabe todo lo que pasa en el consorcio", c:"Personas"},
+  {w:"Cajera del super",   d:"Escanea todo rapidísimo mientras vos todavía buscás la bolsa", c:"Personas"},
+  {w:"Médico de guardia",  d:"El que te atiende a las 3am en urgencias del hospital público", c:"Personas"},
+  {w:"Maestra jardinera",  d:"La profe del jardín de infantes, tiene paciencia infinita", c:"Personas"},
+  {w:"Barrabrava",         d:"La hinchada organizada y violenta de un club de fútbol", c:"Personas"},
+  {w:"Puntero político",   d:"Referente de barrio que moviliza gente a cambio de favores", c:"Personas"},
+  {w:"Inspector de colectivos",d:"Sube al bondi a revisar que hayas pagado el boleto", c:"Personas"},
 
   // ── Situaciones ──
-  {w:"Corte de luz",       d:"Cuando se va la electricidad, suele pasar en verano con el calor"},
-  {w:"Semana de exámenes", d:"La semana donde nadie duerme y todos toman mate de más"},
-  {w:"Resaca del domingo", d:"El cuerpo cortado después del sábado a la noche"},
-  {w:"Cumpleaños de quince",d:"La fiesta más importante para una chica, con vestido y vals"},
-  {w:"Reunión de consorcio",d:"Junta de vecinos del edificio donde todos se quejan de todo"},
-  {w:"Cola del banco",     d:"La fila de una hora para un trámite que dura dos minutos"},
-  {w:"Paro general",       d:"Día que para el país entero: sin transporte ni servicios"},
-  {w:"Corte de ruta",      d:"Protesta bloqueando la autopista o calle, muy común en Argentina"},
-  {w:"Turno médico",       d:"Cuando conseguís turno en tres meses y se te olvida el día"},
-  {w:"Trámite en el ANSES",d:"El calvario burocrático para cobrar jubilación o asignación"},
-  {w:"Asado del domingo",  d:"El ritual familiar que arranca a las 12 y termina a las 6 de la tarde"},
-  {w:"Kermesse escolar",   d:"Feria del colegio con juegos, puestos de comida y bingo de padres"},
-  {w:"Casamiento en el campo",d:"Boda en una estancia con asado, fogón y baile hasta el amanecer"},
-  {w:"Cumpleaños de 50",   d:"La fiesta con todo el barrio, empanadas, torta y baile de cuarteto"},
+  {w:"Corte de luz",       d:"Cuando se va la electricidad, suele pasar en verano con el calor", c:"Situaciones"},
+  {w:"Semana de exámenes", d:"La semana donde nadie duerme y todos toman mate de más", c:"Situaciones"},
+  {w:"Resaca del domingo", d:"El cuerpo cortado después del sábado a la noche", c:"Situaciones"},
+  {w:"Cumpleaños de quince",d:"La fiesta más importante para una chica, con vestido y vals", c:"Situaciones"},
+  {w:"Reunión de consorcio",d:"Junta de vecinos del edificio donde todos se quejan de todo", c:"Situaciones"},
+  {w:"Cola del banco",     d:"La fila de una hora para un trámite que dura dos minutos", c:"Situaciones"},
+  {w:"Paro general",       d:"Día que para el país entero: sin transporte ni servicios", c:"Situaciones"},
+  {w:"Corte de ruta",      d:"Protesta bloqueando la autopista o calle, muy común en Argentina", c:"Situaciones"},
+  {w:"Turno médico",       d:"Cuando conseguís turno en tres meses y se te olvida el día", c:"Situaciones"},
+  {w:"Trámite en el ANSES",d:"El calvario burocrático para cobrar jubilación o asignación", c:"Situaciones"},
+  {w:"Asado del domingo",  d:"El ritual familiar que arranca a las 12 y termina a las 6 de la tarde", c:"Situaciones"},
+  {w:"Kermesse escolar",   d:"Feria del colegio con juegos, puestos de comida y bingo de padres", c:"Situaciones"},
+  {w:"Casamiento en el campo",d:"Boda en una estancia con asado, fogón y baile hasta el amanecer", c:"Situaciones"},
+  {w:"Cumpleaños de 50",   d:"La fiesta con todo el barrio, empanadas, torta y baile de cuarteto", c:"Situaciones"},
 
   // ── Jerga ──
-  {w:"Fiaca",              d:"Desgano total, no tener ganas de hacer absolutamente nada"},
-  {w:"Quilombo",           d:"Lío, desorden o caos. 'Esto es un quilombo' = todo está mal"},
-  {w:"Bardo",              d:"Problema, lío o situación complicada"},
-  {w:"Garrón",             d:"Algo que te sale mal o da mala suerte, un fastidio grande"},
-  {w:"Chabón",             d:"Tipo, pibe, hombre. 'El chabón ese' = ese tipo"},
-  {w:"Mango",              d:"Un peso argentino. 'No tengo un mango' = estoy sin plata"},
-  {w:"Laburo",             d:"Trabajo. 'El laburo' = el trabajo, el empleo"},
-  {w:"Piola",              d:"Copado, hábil o buena persona. 'Es muy piola' = es genial"},
-  {w:"Copado",             d:"Genial, buenísimo. 'Qué copado' = qué bueno, me encanta"},
-  {w:"Zarpado",            d:"Algo extremo o exagerado, puede ser bueno o malo según el tono"},
-  {w:"Flashar",            d:"Imaginar cosas, alucinar, o entusiasmarse demasiado con algo"},
-  {w:"Morfar",             d:"Comer. 'Vamos a morfar' = vamos a comer algo"},
-  {w:"Chapar",             d:"Besar en la boca. 'La chapé en la fiesta' = nos besamos"},
-  {w:"Birra",              d:"Cerveza. 'Una birra bien fría' = una cerveza helada, por favor"},
-  {w:"Groso",              d:"Alguien muy bueno o capaz. 'Es un groso' = es excelente"},
-  {w:"Hacerse el sota",    d:"Fingir que no entendés algo para no asumir responsabilidades"},
-  {w:"Tirarse a muerto",   d:"No hacer nada y dejar que los demás resuelvan todo"},
-  {w:"Dar pelota",         d:"Prestar atención. 'No le des pelota' = ignoralo nomás"},
-  {w:"Sacar los trapitos", d:"Revelar cosas privadas comprometedoras de alguien"},
-  {w:"Estar al pedo",      d:"No tener nada que hacer, estar sin ninguna ocupación"},
-  {w:"Cagar a pedos",      d:"Retarle fuertemente a alguien por algo que hizo mal"},
-  {w:"Hacer la vista gorda",d:"Ignorar algo malo a propósito, hacerse el que no vio nada"},
-  {w:"Ir a los bifes",     d:"Ir directamente al punto, sin vueltas ni rodeos"},
-  {w:"Pasarla bomba",      d:"Pasarla muy bien, divertirse mucho en algo"},
-  {w:"Ponerse las pilas",  d:"Empezar a trabajar en serio, dejar de procrastinar"},
+  {w:"Fiaca",              d:"Desgano total, no tener ganas de hacer absolutamente nada", c:"Jerga"},
+  {w:"Quilombo",           d:"Lío, desorden o caos. 'Esto es un quilombo' = todo está mal", c:"Jerga"},
+  {w:"Bardo",              d:"Problema, lío o situación complicada", c:"Jerga"},
+  {w:"Garrón",             d:"Algo que te sale mal o da mala suerte, un fastidio grande", c:"Jerga"},
+  {w:"Chabón",             d:"Tipo, pibe, hombre. 'El chabón ese' = ese tipo", c:"Jerga"},
+  {w:"Mango",              d:"Un peso argentino. 'No tengo un mango' = estoy sin plata", c:"Jerga"},
+  {w:"Laburo",             d:"Trabajo. 'El laburo' = el trabajo, el empleo", c:"Jerga"},
+  {w:"Piola",              d:"Copado, hábil o buena persona. 'Es muy piola' = es genial", c:"Jerga"},
+  {w:"Copado",             d:"Genial, buenísimo. 'Qué copado' = qué bueno, me encanta", c:"Jerga"},
+  {w:"Zarpado",            d:"Algo extremo o exagerado, puede ser bueno o malo según el tono", c:"Jerga"},
+  {w:"Flashar",            d:"Imaginar cosas, alucinar, o entusiasmarse demasiado con algo", c:"Jerga"},
+  {w:"Morfar",             d:"Comer. 'Vamos a morfar' = vamos a comer algo", c:"Jerga"},
+  {w:"Chapar",             d:"Besar en la boca. 'La chapé en la fiesta' = nos besamos", c:"Jerga"},
+  {w:"Birra",              d:"Cerveza. 'Una birra bien fría' = una cerveza helada, por favor", c:"Jerga"},
+  {w:"Groso",              d:"Alguien muy bueno o capaz. 'Es un groso' = es excelente", c:"Jerga"},
+  {w:"Hacerse el sota",    d:"Fingir que no entendés algo para no asumir responsabilidades", c:"Jerga"},
+  {w:"Tirarse a muerto",   d:"No hacer nada y dejar que los demás resuelvan todo", c:"Jerga"},
+  {w:"Dar pelota",         d:"Prestar atención. 'No le des pelota' = ignoralo nomás", c:"Jerga"},
+  {w:"Sacar los trapitos", d:"Revelar cosas privadas comprometedoras de alguien", c:"Jerga"},
+  {w:"Estar al pedo",      d:"No tener nada que hacer, estar sin ninguna ocupación", c:"Jerga"},
+  {w:"Cagar a pedos",      d:"Retarle fuertemente a alguien por algo que hizo mal", c:"Jerga"},
+  {w:"Hacer la vista gorda",d:"Ignorar algo malo a propósito, hacerse el que no vio nada", c:"Jerga"},
+  {w:"Ir a los bifes",     d:"Ir directamente al punto, sin vueltas ni rodeos", c:"Jerga"},
+  {w:"Pasarla bomba",      d:"Pasarla muy bien, divertirse mucho en algo", c:"Jerga"},
+  {w:"Ponerse las pilas",  d:"Empezar a trabajar en serio, dejar de procrastinar", c:"Jerga"},
 
   // ── Economía y política ──
-  {w:"Dólar blue",         d:"El dólar que se compra ilegalmente en cuevas, siempre más caro"},
-  {w:"Inflación",          d:"Cuando todo sube de precio y el sueldo nunca alcanza"},
-  {w:"Plan social",        d:"Ayuda económica del Estado para familias con bajos recursos"},
-  {w:"Tarifazo",           d:"Aumento brutal de las tarifas de luz, gas o agua de golpe"},
-  {w:"Cuotas sin interés", d:"Comprar algo caro pagando en partes sin pagar de más"},
-  {w:"Bache en la calle",  d:"Hoyo en el asfalto que destruye la suspensión de los autos"},
-  {w:"Foto de campaña",    d:"Foto del candidato con gente del pueblo para parecer cercano"},
-  {w:"Paro docente",       d:"Huelga de maestros, los chicos se quedan sin clases"},
-  {w:"Corralito",          d:"Cuando el gobierno congela los depósitos bancarios como en 2001"},
-  {w:"Lista colectora",    d:"Boleta electoral que va pegada a otra más votada para ganar votos"},
+  {w:"Dólar blue",         d:"El dólar que se compra ilegalmente en cuevas, siempre más caro", c:"Economía y política"},
+  {w:"Inflación",          d:"Cuando todo sube de precio y el sueldo nunca alcanza", c:"Economía y política"},
+  {w:"Plan social",        d:"Ayuda económica del Estado para familias con bajos recursos", c:"Economía y política"},
+  {w:"Tarifazo",           d:"Aumento brutal de las tarifas de luz, gas o agua de golpe", c:"Economía y política"},
+  {w:"Cuotas sin interés", d:"Comprar algo caro pagando en partes sin pagar de más", c:"Economía y política"},
+  {w:"Bache en la calle",  d:"Hoyo en el asfalto que destruye la suspensión de los autos", c:"Economía y política"},
+  {w:"Foto de campaña",    d:"Foto del candidato con gente del pueblo para parecer cercano", c:"Economía y política"},
+  {w:"Paro docente",       d:"Huelga de maestros, los chicos se quedan sin clases", c:"Economía y política"},
+  {w:"Corralito",          d:"Cuando el gobierno congela los depósitos bancarios como en 2001", c:"Economía y política"},
+  {w:"Lista colectora",    d:"Boleta electoral que va pegada a otra más votada para ganar votos", c:"Economía y política"},
 
   // ── Tecnología ──
-  {w:"Grupo de WhatsApp",  d:"El grupo familiar donde mandan cadenas y audios interminables"},
-  {w:"Cadena de WhatsApp", d:"Mensaje falso que piden que reenvíes a todos tus contactos"},
-  {w:"Mercado Libre",      d:"El Amazon argentino, se consigue todo pero cuidate de los truchos"},
-  {w:"Mercado Pago",       d:"La billetera virtual más usada del país, el QR del kiosco"},
-  {w:"PedidosYa",          d:"La app para pedir comida a domicilio sin moverse del sillón"},
-  {w:"CBU",                d:"El número largo de 22 dígitos para hacer transferencias bancarias"},
-  {w:"QR del kiosco",      d:"El código que escaneás con el celu para pagar en el kiosco"},
-  {w:"Billetera virtual",  d:"App del celular donde guardás plata sin ir al banco"},
+  {w:"Grupo de WhatsApp",  d:"El grupo familiar donde mandan cadenas y audios interminables", c:"Tecnología"},
+  {w:"Cadena de WhatsApp", d:"Mensaje falso que piden que reenvíes a todos tus contactos", c:"Tecnología"},
+  {w:"Mercado Libre",      d:"El Amazon argentino, se consigue todo pero cuidate de los truchos", c:"Tecnología"},
+  {w:"Mercado Pago",       d:"La billetera virtual más usada del país, el QR del kiosco", c:"Tecnología"},
+  {w:"PedidosYa",          d:"La app para pedir comida a domicilio sin moverse del sillón", c:"Tecnología"},
+  {w:"CBU",                d:"El número largo de 22 dígitos para hacer transferencias bancarias", c:"Tecnología"},
+  {w:"QR del kiosco",      d:"El código que escaneás con el celu para pagar en el kiosco", c:"Tecnología"},
+  {w:"Billetera virtual",  d:"App del celular donde guardás plata sin ir al banco", c:"Tecnología"},
 
   // ── Fiestas y tradiciones ──
-  {w:"Carnaval de Gualeguaychú",d:"El carnaval más famoso de Argentina con carrozas enormes y plumas"},
-  {w:"Festival de Cosquín",d:"El festival de folclore más importante del país, en enero en Córdoba"},
-  {w:"Vendimia",           d:"Fiesta en Mendoza que celebra la cosecha de la uva y el vino"},
-  {w:"Feria del libro",    d:"Evento anual en Buenos Aires con libros, autores y mucha gente"},
-  {w:"Fogón criollo",      d:"Fuego al aire libre con guitarreada, mate y relatos del campo"},
-  {w:"Corso de barrio",    d:"Desfile de carnaval con comparsas, disfraces y serpentinas"},
-  {w:"Mateada",            d:"Reunión informal donde el único plan es tomar mate y charlar"},
+  {w:"Carnaval de Gualeguaychú",d:"El carnaval más famoso de Argentina con carrozas enormes y plumas", c:"Fiestas y tradiciones"},
+  {w:"Festival de Cosquín",d:"El festival de folclore más importante del país, en enero en Córdoba", c:"Fiestas y tradiciones"},
+  {w:"Vendimia",           d:"Fiesta en Mendoza que celebra la cosecha de la uva y el vino", c:"Fiestas y tradiciones"},
+  {w:"Feria del libro",    d:"Evento anual en Buenos Aires con libros, autores y mucha gente", c:"Fiestas y tradiciones"},
+  {w:"Fogón criollo",      d:"Fuego al aire libre con guitarreada, mate y relatos del campo", c:"Fiestas y tradiciones"},
+  {w:"Corso de barrio",    d:"Desfile de carnaval con comparsas, disfraces y serpentinas", c:"Fiestas y tradiciones"},
+  {w:"Mateada",            d:"Reunión informal donde el único plan es tomar mate y charlar", c:"Fiestas y tradiciones"},
 
   // ── Clima ──
-  {w:"Sudestada",          d:"Viento fuerte del sudeste que trae lluvia y hace subir el río"},
-  {w:"Pampero",            d:"Viento frío del sur que baja la temperatura de golpe"},
-  {w:"Zonda",              d:"Viento seco y caliente en Cuyo, se dice que enloquece a la gente"},
-  {w:"Calor porteño",      d:"El calor húmedo de Buenos Aires que parece que respirás agua caliente"},
-  {w:"Granizo de verano",  d:"Tormenta de piedras de hielo que destruye autos y techos en minutos"},
+  {w:"Sudestada",          d:"Viento fuerte del sudeste que trae lluvia y hace subir el río", c:"Clima"},
+  {w:"Pampero",            d:"Viento frío del sur que baja la temperatura de golpe", c:"Clima"},
+  {w:"Zonda",              d:"Viento seco y caliente en Cuyo, se dice que enloquece a la gente", c:"Clima"},
+  {w:"Calor porteño",      d:"El calor húmedo de Buenos Aires que parece que respirás agua caliente", c:"Clima"},
+  {w:"Granizo de verano",  d:"Tormenta de piedras de hielo que destruye autos y techos en minutos", c:"Clima"},
 
   // ── Animales ──
-  {w:"Carpincho",          d:"El roedor gigante más querido de Argentina, vive cerca del agua"},
-  {w:"Hornero",            d:"El pájaro nacional que construye nidos de barro en forma de horno"},
-  {w:"Tero",               d:"Pájaro de campo que grita cuando ve a alguien acercarse"},
-  {w:"Cotorra argentina",  d:"Loro verde pequeño y ruidoso que vive en bandadas en las ciudades"},
-  {w:"Vizcacha",           d:"Roedor parecido a una liebre gorda que descansa en las rocas"},
-  {w:"Ñandú",              d:"El avestruz argentino, el ave más grande del país, no vuela"},
-  {w:"Yacaré",             d:"El cocodrilo del litoral argentino, vive en los esteros correntinos"},
-  {w:"Perro callejero",    d:"El ovejero sin dueño que conoce mejor el barrio que cualquiera"},
+  {w:"Carpincho",          d:"El roedor gigante más querido de Argentina, vive cerca del agua", c:"Animales"},
+  {w:"Hornero",            d:"El pájaro nacional que construye nidos de barro en forma de horno", c:"Animales"},
+  {w:"Tero",               d:"Pájaro de campo que grita cuando ve a alguien acercarse", c:"Animales"},
+  {w:"Cotorra argentina",  d:"Loro verde pequeño y ruidoso que vive en bandadas en las ciudades", c:"Animales"},
+  {w:"Vizcacha",           d:"Roedor parecido a una liebre gorda que descansa en las rocas", c:"Animales"},
+  {w:"Ñandú",              d:"El avestruz argentino, el ave más grande del país, no vuela", c:"Animales"},
+  {w:"Yacaré",             d:"El cocodrilo del litoral argentino, vive en los esteros correntinos", c:"Animales"},
+  {w:"Perro callejero",    d:"El ovejero sin dueño que conoce mejor el barrio que cualquiera", c:"Animales"},
 
   // ── Salud y educación ──
-  {w:"CBC de la UBA",      d:"El primer año de todas las carreras de la UBA, el filtro inicial"},
-  {w:"Mesa de diciembre",  d:"El final de materia que rendís en diciembre si te quedaste libre"},
-  {w:"Fotocopiadora de la facu",d:"Donde comprás los apuntes y la bibliografía de la materia"},
-  {w:"PAMI",               d:"La obra social de los jubilados, la más grande del país"},
-  {w:"Hospital público",   d:"El hospital gratuito del Estado, lleno de gente pero con médicos dedicados"},
-  {w:"Vacunatorio",        d:"El lugar donde te vacunan, en pandemia hubo colas de horas"},
+  {w:"CBC de la UBA",      d:"El primer año de todas las carreras de la UBA, el filtro inicial", c:"Salud y educación"},
+  {w:"Mesa de diciembre",  d:"El final de materia que rendís en diciembre si te quedaste libre", c:"Salud y educación"},
+  {w:"Fotocopiadora de la facu",d:"Donde comprás los apuntes y la bibliografía de la materia", c:"Salud y educación"},
+  {w:"PAMI",               d:"La obra social de los jubilados, la más grande del país", c:"Salud y educación"},
+  {w:"Hospital público",   d:"El hospital gratuito del Estado, lleno de gente pero con médicos dedicados", c:"Salud y educación"},
+  {w:"Vacunatorio",        d:"El lugar donde te vacunan, en pandemia hubo colas de horas", c:"Salud y educación"},
 ];
 
 // ══════════════════════════════════════════════════════════════
 // ESTADO
 // ══════════════════════════════════════════════════════════════
-let numPlayers=5, numImpostors=1;
+let numPlayers=5, numImpostors=1, useHints=false;
 let playerNames=[], roles=[];
-let currentEntry={w:'',d:''}, currentTurn=0;
+let currentEntry={w:'',d:'',c:''}, currentTurn=0;
+let timerInterval=null, timerLeft=120;
 let revealed=false, touchStartY=0;
 
 function show(id){
@@ -468,11 +546,13 @@ function goNames(){
 }
 
 function goDirectPlay(){
+  useHints = document.getElementById('useHints').checked;
   playerNames=Array.from({length:numPlayers},(_,i)=>`Jugador ${i+1}`);
   startRound();
 }
 
 function startGame(){
+  useHints = document.getElementById('useHints').checked;
   playerNames=[];
   for(let i=0;i<numPlayers;i++){
     const v=document.getElementById(`pn${i}`).value.trim();
@@ -500,11 +580,15 @@ function showTurn(){
   document.getElementById('progressBar').style.width=(currentTurn/numPlayers*100)+'%';
 
   const isImp=roles[currentTurn]==='impostor';
+  let impText = `<div class="word-desc">No sabés la palabra. Escuchá a los demás e inventá algo creíble para no quedar expuesto.</div>`;
+  if (useHints && currentEntry.c) {
+    impText = `<div class="word-desc" style="color:var(--yellow); border-top:none; text-align:center; font-size:14px; margin-top:12px;"><strong>PISTA:</strong><br/>La categoría es:<br/><span style="font-size:18px; color:#fff;">${currentEntry.c}</span></div>`;
+  }
   document.getElementById('revealContent').innerHTML = isImp
     ? `<div class="word-label">TU ROL</div>
        <div class="word-text es-impostor">IMPOSTOR</div>
        <div class="impostor-chip">⚠ No te quemes</div>
-       <div class="word-desc">No sabés la palabra. Escuchá a los demás e inventá algo creíble para no quedar expuesto.</div>`
+       ${impText}`
     : `<div class="word-label">TU PALABRA</div>
        <div class="word-text es-normal">${currentEntry.w}</div>
        <div class="word-desc">${currentEntry.d}</div>`;
@@ -518,10 +602,23 @@ function doReveal(){
   document.getElementById('turnFooter').textContent='✓ Memorizá y pasá el celu boca abajo';
 }
 
+let isTransitioning = false;
 function nextTurn(){
-  currentTurn++;
-  if(currentTurn>=numPlayers) showResult();
-  else showTurn();
+  if(isTransitioning) return;
+  isTransitioning = true;
+  document.getElementById('nextBtn').style.display='none';
+  
+  // 1. Remove revealed class so it slides down physically
+  const sz = document.getElementById('swipeZone');
+  sz.classList.remove('revealed');
+  
+  // 2. Wait exactly for the css transition to end (450ms matching the transform transition)
+  setTimeout(() => {
+    currentTurn++;
+    isTransitioning = false;
+    if(currentTurn>=numPlayers) showResult();
+    else showTurn();
+  }, 450);
 }
 
 function showResult(){
@@ -531,6 +628,15 @@ function showResult(){
   document.getElementById('resImpostor').textContent=playerNames.filter((_,i)=>roles[i]==='impostor').join(' y ');
   document.getElementById('verdictHidden').style.display='block';
   document.getElementById('verdictShown').style.display='none';
+  
+  // Reset Timer
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null; timerLeft = 120;
+  document.getElementById('timerDisplay').classList.remove('urgent');
+  document.getElementById('timerDisplay').textContent = '2:00';
+  document.getElementById('timerBtn').textContent = 'Empezar Debate';
+  document.getElementById('timerBtn').style.display = 'inline-block';
+  
   show('s-result');
 }
 
@@ -540,6 +646,28 @@ function revelarImpostor(){
 }
 
 function playAgain(){startRound();}
+
+function toggleTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval); timerInterval = null;
+    document.getElementById('timerBtn').textContent = 'Continuar Debate';
+    return;
+  }
+  document.getElementById('timerBtn').textContent = 'Pausar Debate';
+  timerInterval = setInterval(() => {
+    timerLeft--;
+    let m = Math.floor(timerLeft / 60);
+    let s = timerLeft % 60;
+    document.getElementById('timerDisplay').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    if (timerLeft <= 10) document.getElementById('timerDisplay').classList.add('urgent');
+    if (timerLeft <= 0) {
+      clearInterval(timerInterval); timerInterval=null;
+      document.getElementById('timerDisplay').textContent = "¡TIEMPO!";
+      document.getElementById('timerBtn').style.display = 'none';
+    }
+  }, 1000);
+}
+
 
 // ── Swipe ──
 function tStart(e){touchStartY=e.touches[0].clientY;}
