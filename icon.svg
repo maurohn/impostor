@@ -17,7 +17,7 @@
   </defs>
 
   <!-- backpack -->
-  <path d="M 160 250 L 120 250 C 100 250 100 370 120 370 L 160 370" fill="none" stroke="#8b5cf6" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="120" y="230" width="60" height="150" rx="25" fill="#050508" stroke="#8b5cf6" stroke-width="28" stroke-linejoin="round"/>
   
   <!-- body (inverted U shape with legs) -->
   <path d="M 180 250 C 180 120 340 120 340 250 L 340 430 C 340 460 280 460 280 430 L 280 380 L 240 380 L 240 430 C 240 460 180 460 180 430 Z" fill="#050508" stroke="#c084fc" stroke-width="28" stroke-linejoin="round"/>
