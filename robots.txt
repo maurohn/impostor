@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://maurohn.github.io/impostor/sitemap.xml
+Sitemap: https://impostor-ar.netlify.app/sitemap.xml
